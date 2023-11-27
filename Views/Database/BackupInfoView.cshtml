@@ -1,0 +1,82 @@
+﻿@model List<BackupInfoModel>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Backup Information - WebDBBackup</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
+    <style>
+        p {
+            color: #dc3545;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+    <div class="container my-4">
+        <h2 class="text-center text-primary mb-4">Backup Information</h2>
+
+        <table class="table table-bordered table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Database Name</th>
+                    <th>Drive Link</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var info in Model)
+                {
+                    <tr>
+                        <td>@info.DatabaseName</td>
+                        <td><a href="@info.DriveLink" target="_blank">@info.DriveLink</a></td>
+                        <td><button class="btn btn-primary copy-link" data-link="@info.DriveLink">Copy Link</button></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <button id="copy-all" class="btn btn-success">Copy All Links to Clipboard</button>
+
+        @if (TempData["Message"] != null)
+        {
+            <p class="text-danger">@Html.Raw(TempData["Message"])</p>
+        }
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var copyAllButton = document.getElementById('copy-all');
+            var copyButtons = document.querySelectorAll('.copy-link');
+
+            copyButtons.forEach(function (button) {
+                button.addEventListener('click', function () {
+                    copyToClipboard(button.getAttribute('data-link'));
+                });
+            });
+
+            copyAllButton.addEventListener('click', function () {
+                var allLinks = Array.from(copyButtons).map(button => button.getAttribute('data-link')).join('\n');
+                console.log(allLinks);
+                copyToClipboard(allLinks);
+            });
+
+            function copyToClipboard(text) {
+                var textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+            }
+        });
+    </script>
+</body>
+
+</html>

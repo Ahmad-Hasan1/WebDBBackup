@@ -1,0 +1,101 @@
+﻿@model List<DatabaseModel>
+@{
+    Layout = "_Layout";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
+    <style>
+
+        h2 {
+            color: #007bff;
+        }
+
+        .database-columns {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: space-between;
+        }
+
+        .database-column {
+            flex: 0 0 calc(33.33% - 20px);
+        }
+
+        div {
+            margin-bottom: 10px;
+        }
+
+        button {
+            margin-top: 10px;
+        }
+
+        p {
+            color: #dc3545;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+    <div class="container my-4">
+        <h2 class="text-primary">Database List</h2>
+
+        @using (Html.BeginForm("BackupAndUpload", "Database", FormMethod.Post))
+        {
+            int databasesPerColumn = (int)Math.Ceiling((double)Model.Count / 3);
+
+            <div class="database-columns">
+                @for (int i = 0; i < 3; i++)
+                {
+                    <div class="database-column">
+                        @for (int j = i * databasesPerColumn; j < Math.Min((i + 1) * databasesPerColumn, Model.Count); j++)
+                        {
+                            <div>
+                                @Html.HiddenFor(m => Model[j].Name)
+                                <div class="custom-control custom-checkbox">
+                                    @Html.CheckBoxFor(m => Model[j].IsSelected, new { @class = "custom-control-input", id = $"chk_{Model[j].Name}" })
+                                    <label class="custom-control-label" for="@($"chk_{Model[j].Name}")">@Model[j].Name</label>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+            <button class="btn btn-success" type="submit">Backup and Upload Selected Databases</button>
+            <button class="btn btn-danger" id="remove-backup-files" asp-action="RemoveBackupFiles">Remove All Backup Files from Google Drive</button>
+        }
+
+        @if (TempData["Message"] != null)
+        {
+            <p class="text-danger">@Html.Raw(TempData["Message"])</p>
+        }
+    </div>
+
+    
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var removeBackupFilesButton = document.getElementById('remove-backup-files');
+
+            removeBackupFilesButton.addEventListener('click', function () {
+
+                var confirmRemove = confirm('Are you sure you want to remove all backup files from Google Drive?');
+
+                if (confirmRemove) {
+                    window.location.href = '@Url.Action("RemoveBackupFiles", "Database")';
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
