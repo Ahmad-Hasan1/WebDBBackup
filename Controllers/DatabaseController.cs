@@ -9,6 +9,7 @@ using Google.Apis.Services;
 using Google.Apis.Util.Store;
 using System.IO.Compression;
 using Microsoft.AspNetCore.Mvc;
+using Google.Apis.Gmail.v1;
 using Microsoft.Extensions.Configuration;
 using WebDBBackup.Models;
 
@@ -21,6 +22,7 @@ namespace WebDBBackup.Controllers
         public DatabaseController(IConfiguration configuration)
         {
             _configuration = configuration;
+            //LoginGmailAccount();
         }
 
         public ActionResult Index()
@@ -185,7 +187,7 @@ namespace WebDBBackup.Controllers
             UserCredential credential;
 
             // Load credentials from a file
-            using (var stream = new FileStream("credentials.json", FileMode.Open, FileAccess.Read))
+            using (var stream = new FileStream("./credentials.json", FileMode.Open, FileAccess.Read))
             {
                 string credPath = "token.json";
 
@@ -258,5 +260,27 @@ namespace WebDBBackup.Controllers
                 Console.WriteLine($"File {file.Name} deleted from Google Drive.");
             }
         }
+
+        /*private void LoginGmailAccount()
+        {
+            UserCredential credential;
+            string[] Scopes = { GmailService.Scope.GmailReadonly };
+            using (var stream = new FileStream("credentials.json", FileMode.Open, FileAccess.Read))
+            {
+                string credPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal);
+                credPath = Path.Combine(credPath, ".credentials / gmail - dotnet - quickstart.json");
+
+                credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
+                   GoogleClientSecrets.Load(stream).Secrets, Scopes, "user", CancellationToken.None, new FileDataStore(credPath, true)).Result;
+            }
+            string ApplicationName = "Gmail API .NET Quickstart";
+            // Create Gmail API service.
+            var service = new GmailService(new BaseClientService.Initializer()
+            {
+                HttpClientInitializer = credential,
+                ApplicationName = ApplicationName,
+            });
+        }*/
+
     }
 }

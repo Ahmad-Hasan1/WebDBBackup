@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Google.Apis.Auth" Version="1.64.0" />
     <PackageReference Include="Google.Apis.Drive.v3" Version="1.64.0.3155" />
+    <PackageReference Include="Google.Apis.Gmail.v1" Version="1.64.0.3231" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.2" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
   </ItemGroup>
