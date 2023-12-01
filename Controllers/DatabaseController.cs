@@ -189,6 +189,7 @@ namespace WebDBBackup.Controllers
             // Load credentials from a file
             using (var stream = new FileStream("./credentials.json", FileMode.Open, FileAccess.Read))
             {
+                //string currentDirectory = Directory.GetCurrentDirectory();
                 string credPath = "token.json";
 
                 credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
