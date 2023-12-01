@@ -182,12 +182,12 @@ namespace WebDBBackup.Controllers
             return zipFilePath;
         }
 
-        private UserCredential GetGoogleDriveCredentials()
+        private GoogleCredential GetGoogleDriveCredentials()
         {
-            UserCredential credential;
+            //UserCredential credential;
 
             // Load credentials from a file
-            using (var stream = new FileStream("./credentials.json", FileMode.Open, FileAccess.Read))
+            /*using (var stream = new FileStream("./.json", FileMode.Open, FileAccess.Read))
             {
                 //string currentDirectory = Directory.GetCurrentDirectory();
                 string credPath = "token.json";
@@ -198,7 +198,11 @@ namespace WebDBBackup.Controllers
                     "user",
                     CancellationToken.None,
                     new FileDataStore(credPath, true)).Result;
-            }
+            }*/
+
+            var serviceAccountKeyFile = "./backupdatabases.json";
+            var credential = GoogleCredential.FromFile(serviceAccountKeyFile)
+                                .CreateScoped(DriveService.ScopeConstants.Drive);
 
             return credential;
         }
@@ -210,12 +214,18 @@ namespace WebDBBackup.Controllers
             // Get Google Drive credentials
             var credential = GetGoogleDriveCredentials();
 
-            // Create Drive API service
             var service = new DriveService(new BaseClientService.Initializer()
             {
                 HttpClientInitializer = credential,
                 ApplicationName = "Google Drive API",
             });
+
+            // Create Drive API service
+            /*var service = new DriveService(new BaseClientService.Initializer()
+            {
+                HttpClientInitializer = credential,
+                ApplicationName = "Google Drive API",
+            });*/
 
             // Upload the file
             var fileMetadata = new Google.Apis.Drive.v3.Data.File()
@@ -228,7 +238,15 @@ namespace WebDBBackup.Controllers
             using (var stream = new FileStream(filePath, FileMode.Open))
             {
                 request = service.Files.Create(fileMetadata, stream, "application/octet-stream");
-                request.Upload();
+                try
+                {
+                    request.Upload();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("An error occurred: " + ex.Message);
+                    return null;
+                }
             }
 
             var file = request.ResponseBody;
